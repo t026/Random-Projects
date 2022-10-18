@@ -22,4 +22,4 @@ while True: #loops over and over 60 times per second
     increasing x goes to the right, increasing y goes to the bottom
     '''
     pygame.display.update() 
-    clock.tick(60) #updates every second for 60 times.
+    clock.tick(90) #updates every second for 60 times.
