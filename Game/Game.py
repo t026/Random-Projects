@@ -26,6 +26,9 @@ text_surface = test_font.render("Game 1", True, 'Red')  #first argument = text, 
 sky = pygame.image.load("Graphics/sky.png") #loads an image from the folder and sets it to the background
 ground = pygame.image.load("Graphics/ground.png")
 
+snail_surface = pygame.image.load("Graphics/Snail/snail1.png")
+snail_x_pos = 600
+snail_y_pos = 265 #constant, snail cannot jump 
 while True: #loops over and over 60 times per second
     for event in pygame.event.get(): #looks for event in event.get() 
         if event.type == pygame.QUIT: #if event is quit(X), closes pygame and stops code
@@ -35,6 +38,9 @@ while True: #loops over and over 60 times per second
     screen.blit(sky, (0,0)) #puts a surface on the display surface
     screen.blit(text_surface, (100,100))
     screen.blit(ground, (0, 300))
+    screen.blit(snail_surface, (snail_x_pos,snail_y_pos))
+    if snail_x_pos > 200:
+        snail_x_pos -= 1
     '''
     position (0,0) is the top left of the window
     increasing x goes to the right, increasing y goes to the bottom
