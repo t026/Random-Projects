@@ -1,7 +1,20 @@
 import pygame
 from sys import exit
+import random
 
-    
+def obstacle_movement(obstacle_list):
+    if obstacle_list:
+        for obstacle_rect in obstacle_list:
+            obstacle_rect.x -= 5
+            if obstacle_rect.bottom == 300:
+                screen.blit(snail_surface, obstacle_rect)
+            else:
+                screen.blit(fly_surface, obstacle_rect)
+        obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
+        return obstacle_list
+    return []
+
+def collisions(player, obstacles)
 #initialising pygame
 pygame.init() #initializes pygame
 
@@ -32,9 +45,12 @@ ground = pygame.image.load("Graphics/ground.png").convert()
 
 #.convert() converts png image
 
+#obstacles
 snail_surface = pygame.image.load("Graphics/Snail/snail1.png").convert_alpha()
-snail_rectangle = snail_surface.get_rect(midbottom = (600, 300))
- 
+#snail_rectangle = snail_surface.get_rect(midbottom = (600, 300))
+fly_surface = pygame.image.load("Graphics/Fly/fly1.png").convert_alpha()
+# fly_rectangle = fly_surface.get_rect(midbottom = (600, 300))
+obstacle_rect_list = []
 
 player_surface = pygame.image.load("Graphics/Player/player_walk_1.png").convert_alpha()
 player_rectangle = player_surface.get_rect(midbottom = (80, 300)) #takes the surface and draws a rectangle around it
@@ -46,6 +62,11 @@ score = 0
 reset = True
 doublejump = True
 newtime = 0
+
+#timer
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 1200)
+
 while True: #loops over and over 60 times per second
     for event in pygame.event.get(): #looks for event in event.get() 
         if event.type == pygame.QUIT: #if event is quit(X), closes pygame and stops code
@@ -61,7 +82,11 @@ while True: #loops over and over 60 times per second
                 game_active = True
                 score = 0
                 newtime = pygame.time.get_ticks()/1000
-                snail_rectangle.left = 800
+        if event.type == obstacle_timer and game_active:
+            if random.randint(0, 1) == 1:
+                obstacle_rect_list.append(snail_surface.get_rect(bottomright = (random.randint(900, 1100), 300)))
+            else:
+                obstacle_rect_list.append(fly_surface.get_rect(bottomright = (random.randint(900, 1100), 210)))
     if player_rectangle.bottom == 300: 
         doublejump = True
     if game_active:
@@ -73,21 +98,22 @@ while True: #loops over and over 60 times per second
         screen.blit(ground, (0, 300))
         
         #snail
-        screen.blit(snail_surface, snail_rectangle)
+        #screen.blit(snail_surface, snail_rectangle)
         #snail movement speed = -10 per frame = -600pixels/second 
         #speed will be the same regardless of framerate
-        snail_rectangle.right -= 600/framerate
+        '''snail_rectangle.right -= 600/framerate
         if snail_rectangle.right < 0: 
             snail_rectangle.left = 800
-            reset = True
+            reset = True'''
+
         #player
         player_gravity += 60/framerate
-        player_rectangle.bottom += player_gravity
+        player_rectangle.y += player_gravity 
         if player_rectangle.bottom >= 300:
             player_rectangle.bottom = 300
         screen.blit(player_surface,player_rectangle)
 
-        if snail_rectangle.colliderect(player_rectangle): game_active = False
+        #if snail_rectangle.colliderect(player_rectangle): game_active = False
     
         #score
         time = round(pygame.time.get_ticks()/1000) -round(newtime)
@@ -95,9 +121,9 @@ while True: #loops over and over 60 times per second
         score_surface = test_font.render(message,  True, (64,64,64))
         score_rectangle = score_surface.get_rect(center = (400, 100))
         screen.blit(score_surface, score_rectangle)
-        if player_rectangle.center > snail_rectangle.center and reset: 
-            score += 1
-            reset = False
+        #if player_rectangle.center > snail_rectangle.center and reset: 
+            #score += 1
+            #reset = False
 
         '''keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
@@ -106,9 +132,10 @@ while True: #loops over and over 60 times per second
         #if player_rectangle.collidepoint(pygame.mouse.get_pos()): this checks if mouse is on rectangle
         # print(pygame.mouse.get_pressed())
         #.get_pressed()creates a tuple where 0th position is left click, 1st position is middle mouse click, 2nd position is right click
+        obstacle_rect_list = obstacle_movement(obstacle_rect_list)
     else:
         message = f"Game Over. Your score was : {score}"
-        end_surface = test_font.render(message, True, (64,64,64))
+        end_surface = test_font.render(message, True, (64,64,64)) 
         end_rectangle = end_surface.get_rect(center = (400,100))
         screen.fill("Red")
         screen.blit(end_surface,end_rectangle)
